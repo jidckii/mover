@@ -1,0 +1,78 @@
+#!/bin/bash
+
+template=/opt/mover/tmp/template.sh
+worklist1=/opt/mover/tmp/worklist1.txt
+worklist2=/opt/mover/tmp/worklist2.txt
+usbsize=/opt/mover/tmp/usbsize.txt
+usbsizehum=//opt/mover/tmpusbsizehum.txt
+usbsizeend=/opt/mover/tmp/usbsizeend.txt
+workcopy=/opt/mover/tmp/workcopy.sh
+stpqua=/opt/mover/tmp/stpqua.txt
+
+log_daemon=/opt/mover/log/daemon.log
+
+dirmake=/home/mover/queue-video-tmp/
+mediapath=/media
+
+text1="Проверяю наличие видео в формате .MP4 или .MTS"
+text2="Отсутствует USB носитель"
+text3="видео файлов найдено, общий обЪем"
+text4="Введите ИМЯ для инджестируемого материала:"
+text5="Отсутствует видео в формате .MP4 или .MTS , проверьте USB носитель на PC"
+text6="Копирование завершено, извлеките USB носитель !!!"
+text7="Начинаю копирование ..."
+
+
+
+while [ "1" -eq "1" ] # Заходим в цикл и работаем как бы в режиме демона
+do
+    sleep 5
+    du -s $mediapath | awk '{print $1}' > $usbsize
+    du -s -h $mediapath | awk '{print $1}' > $usbsizehum
+    usbsizenum=`cat $usbsize`
+    usbsizehum_num=`cat $usbsizehum`
+	if [ "$usbsizenum" -gt "1000" ] # Проверям размер раталога
+	then
+	    echo -e '\n' "\e[1;36m $text1 \e[0m" '\n'
+	    rm $worklist1 $worklist2 > /dev/null 2>&1  # Удалем если есть старые листы.
+	    find $mediapath -name "*.MP4" >> $worklist1 # Ищим файлы с нужным разрешением 
+	    find $mediapath -name "*.MTS" >> $worklist1 # и добавляем в ворклист предподготовки.
+	    wc $worklist1 | awk '{print $1}' > $stpqua  # Считаем кол-во строк в прелисте
+	    stpquanum=`cat $stpqua`			# и приводим к цисловому
+		if [ "$stpquanum" -gt "0" ] 		# Истинна, если колличество строк больше нуля.
+		then
+		    echo -e '\n' "\e[0;31m $stpquanum \e[0;32m $text3 \e[0;31m $usbsizehum_num \e[0m" '\n'
+		    echo -e '\n' "\e[1;33m $text4 \e[0m" '\n'
+		    read dir_name			# Просим ввести имя для материала.
+            mkdir -p $dirmake$dir_name
+		    cp $template $workcopy							# Копируем ворклист из заготовки с заголовком.
+		    awk '{print "cp "$0" '$dirmake$dir_name'"}' $worklist1 > $worklist2		# Приводим ворклистк рабочему виду для копирования.
+		    cat $worklist2 >> $workcopy
+		    chmod +x $workcopy
+		    echo -e '\n' "\e[1;34m $text7 \e[0m" '\n'
+		    sh $workcopy				# Запускаем копирование
+		    echo -e '\n' "\e[1;32m $text6 \e[0m" '\n'
+		    rm $worklist1 $worklist2 $workcopy $stpqua
+		    sleep 10
+		    du -s $mediapath | awk '{print $1}' > $usbsizeend
+		    usbsizeendnum=`cat $usbsizeend`
+			while [ "$usbsizeendnum" -eq "$usbsizenum" ]	# Если размер каталога остался такой же как и до копирования.
+			do
+			    echo -e '\n' "\e[4;32m $text6 \e[0m" '\n'	# ждем извлечения USB.
+			    sleep 20
+			    du -s $mediapath | awk '{print $1}' > $usbsizeend 	
+			    usbsizeendnum=`cat $usbsizeend`
+				if [ "$usbsizeendnum" -ne "$usbsizenum" ]
+				then
+				    rm $usbsizeend $usbsize $usbsizehum		# Удаляем переменные и  
+				    break					# прерываем цикл
+				fi
+			done 
+					
+		else
+		    echo -e '\n' "\e[0;31m $text5 \e[0m" '\n'
+		fi
+	else 
+	    echo -e '\n' "\e[1;31m $text2 \e[0m" '\n'
+	fi
+done
