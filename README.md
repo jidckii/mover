@@ -34,9 +34,5 @@ sudo chmod +x /opt/mover/bin/mover
 # Для работы в режиме демона при этом с возможностью обрятной связи для инджестера запускать с параметрами:
  
  ```
-/usr/local/sbin/mover >> /opt/mover/log/daemon.log 2>&1 &
-```
-читать вывод 
-```
-tail -f /opt/mover/log/daemon.log
+/usr/local/sbin/mover
 ```
