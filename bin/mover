@@ -23,7 +23,7 @@ while true; do
 		continue
 	fi
 
-	echo -e '\n' "\e[0;32m $text1 \e[0;35m $usbsizehum_num \e[0m" '\n'
+	echo -e '\n' "\e[0;32m $text1 \e[1;95m $usbsizehum_num \e[0m" '\n'
 	worklist_mp4=`find $mediapath -name *.MP4 | wc -l`
 	worklist_mts=`find $mediapath -name *.MTS | wc -l` 
 
@@ -34,34 +34,40 @@ while true; do
 	fi
 
 	if [ "$worklist_mp4" -gt "0" ]; then
-		echo -e '\n' "\e[0;35m $worklist_mp4 \e[0;32m $text3 \e[0;35m MP4 \e[0m" '\n'
+		echo -e '\n' "\e[1;95m $worklist_mp4 \e[0;32m $text3 \e[1;95m MP4 \e[0m" '\n'
 		echo -e '\n' "\e[1;33m $text4 \e[0m" '\n'
 		read dir_name
 		mkdir -p $dirmake$dir_name
 		echo -e '\n' "\e[1;32m $text7 \e[0m" '\n'
-		find $mediapath -name "*.MP4" -print0 | xargs -0 cp --target-directory=$dirmake$dir_name
+		find $mediapath -name "*.MP4" -print0 | xargs -0 cp --target-directory=$dirmake$dir_name &
 	elif [ "$worklist_mts" -gt "0" ]; then
-		echo -e '\n' "\e[0;35m $worklist_mts \e[0;32m $text3 \e[0;35m MTS \e[0m" '\n'
+		echo -e '\n' "\e[1;95m $worklist_mts \e[0;32m $text3 \e[1;95m MTS \e[0m" '\n'
 		echo -e '\n' "\e[1;33m $text4 \e[0m" '\n'
 		read dir_name
 		mkdir -p $dirmake$dir_name
 		echo -e '\n' "\e[1;32m $text7 \e[0m" '\n'
-		find $mediapath -name "*.MTS" -print0 | xargs -0 cp --target-directory=$dirmake$dir_name
+		find $mediapath -name "*.MTS" -print0 | xargs -0 cp --target-directory=$dirmake$dir_name &
 	fi
+
+    ps_status=`ps auxww | grep target-directory| grep -v grep | wc -l`
+    while [ "$ps_status" -gt "0" ]; do
+      sleep 5
+      endsizecp=`du -s -h $dirmake$dir_name | awk '{print $1}'`
+      echo -e '\n' "\e[0;32m скопированно \e[1;95m $endsizecp \e[0;32m из \e[1;95m $usbsizehum_num \e[0m" '\n'
+      ps_status=`ps auxww | grep target-directory| grep -v grep | wc -l`
+    done
 
 	echo -e '\n' "\e[4;32m $text6 \e[0m" '\n'
 	sleep 5
 	usbsizeend=`du -s $mediapath | awk '{print $1}'`
 
 # ждем извлечения USB.
-	while [ "$usbsizeend" -eq "$usbsizenum" ]; do
-		# echo -e '\n' "\e[4;32m $text6 \e[0m" '\n'	
+	while [ "$usbsizeend" -eq "$usbsizenum" ]; do	
 		sleep 2
 		usbsizeend=`du -s $mediapath | awk '{print $1}'`
-		# usbsizeendnum=`cat $usbsizeend`
 
 		if [ "$usbsizeend" -ne "$usbsizenum" ];  then
-			echo -e '\n' "\e[4;32m $text2 \e[0m" '\n'
+			echo -e '\n' "\e[1;95m $text2 \e[0m" '\n'
 			break					
 		fi
 
