@@ -6,23 +6,12 @@
 cd /opt
 sudo git clone https://github.com/jidckii/mover.git
 ```
-
 Создаем пользователя с нужным именем,
 к примеру:
-
 ```
 sudo adduser mover
 ```
-
-назначить правильные права на рабочий каталог
-```
-sudo chmod -R 2775 /opt/mover/tmp
-sudo chown -R mover:mover /opt/mover/tmp
-sudo chmod -R 2775 /opt/mover/log
-sudo chown -R mover:mover /opt/mover/log
-```
 создать симлинку для PATH
-
 ```
 sudo ln -s /opt/mover/bin/mover /usr/local/sbin/mover
 ```
@@ -30,9 +19,7 @@ sudo ln -s /opt/mover/bin/mover /usr/local/sbin/mover
 ```
 sudo chmod +x /opt/mover/bin/mover
 ```
-
-# Для работы в режиме демона при этом с возможностью обрятной связи для инджестера запускать с параметрами:
- 
+запускать
  ```
-/usr/local/sbin/mover
+mover
 ```
