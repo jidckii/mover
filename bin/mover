@@ -67,7 +67,7 @@ while true; do
 		usbsizeend=`du -s $mediapath | awk '{print $1}'`
 
 		if [ "$usbsizeend" -ne "$usbsizenum" ];  then
-			echo -e '\n' "\e[1;95m $text2 \e[0m" '\n'
+			echo -e '\n' "\e[1;96m $text2 \e[0m" '\n'
 			break					
 		fi
 
