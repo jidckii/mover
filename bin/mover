@@ -48,7 +48,7 @@ while true; do
 		echo -e '\n' "\e[1;32m $text7 \e[0m" '\n'
 		find $mediapath -name "*.MTS" -print0 | xargs -0 cp --target-directory=$dirmake$dir_name &
 	fi
-
+	sleep 5
     ps_status=`ps auxww | grep target-directory| grep -v grep | wc -l`
     while [ "$ps_status" -gt "0" ]; do
       sleep 5
