@@ -1,0 +1,12 @@
+[Desktop Entry]
+Name=transcoder-view
+Comment=transcoder-view
+GenericName=
+Keywords=transcoder-view; transcoder; view-transcoder
+Exec=gnome-termonal -x /opt/mover/bin/transcoder-connect.sh
+Terminal=true
+Type=Application
+Icon=icon-transcoder.png
+Path=/opt/mover/
+Categories=
+NoDisplay=false
