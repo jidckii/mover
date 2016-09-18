@@ -1,0 +1,12 @@
+[Desktop Entry]
+Name=mover
+Comment=mover
+GenericName=mover
+Keywords=mover
+Exec=gnome-terminal -x /opt/mover/bin/mover
+Terminal=false
+Type=Application
+Icon=/opt/mover/mover.jpg
+Path=/opt/mover/
+Categories=
+NoDisplay=false
