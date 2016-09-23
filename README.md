@@ -18,15 +18,9 @@ sudo add-apt-repository ppa:caffeine-developers/ppa
 sudo apt-get update
 sudo apt-get install caffeine libappindicator3-1 gir1.2-appindicator3-0.1 
 ```
-в настройках создаем обчного пользователя(не администратора) mover
+в настройках создаем обчного пользователя(не администратора) mover:
 
-логинимся под домашним пользователем, создаем нужный для кдаленного монтирвания каталог
-```
-sudo su mover
-cd
-mkdir /home/mover/queue-video-tmp/
-```
-добавляем в файл .bash_aliases строку
+логинимся под домашним пользователем, добавляем в файл .bash_aliases строку
 ```
 touch /home/mover/.bash_aliases
 echo "alias mover='/opt/mover/bin/mover'" | tee -a /home/mover/.bash_aliases
@@ -34,21 +28,19 @@ ssh-keygen
 scp .ssh/id_rsa.pub transcoder@ingest-transcoder.otv.loc:~/.ssh/authorized_keys
 exit
 ```
-дописываем в файл /etc/fstab строку для монтирования по ftp удаленного каталога
-(естественно изначально нужно установить и настроить host ingest-transcoder)
-```
-echo "curlftpfs#ftp://transcoder:transcoder@ingest-transcoder.otv.loc/queue-video-tmp/ /home/mover/queue-video-tmp/ fuse rw,allow_other,auto,user,uid=mover,gid=mover 0 0" | sudo tee -a /etc/fstab
-sudo mount -a 
-```
-проверяем, что каталог смонтировался 
-```
-df -h
-
 Устанавливаем программу анализа и копирования видео с SD
 ```
 git clone https://github.com/jidckii/mover.git
 sudo cp -R  mover /opt/
 reboot
 ```
-
 Логинимся под mover
+
+открываем dconf-editor, ищем в поиске "automount" и снимаем флаг с чекбокса "automount-open"
+это нужно для того, что при обнаружении USB не открывалось окно проводника.
+
+Далее выносим ярлыки на рабочий стол, и даем им права на исполнение
+
+```
+chmod +x
+```

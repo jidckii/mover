@@ -6,8 +6,8 @@ set PASS "transcoder"
 spawn ssh transcoder@172.20.0.10
 
 expect {
-  "password:" {
-    send "$PASS\n"
+  # "password:" {
+    # send "$PASS\n"
     expect "$*"
     send "transcoder-view\n"
   }
