@@ -37,7 +37,7 @@ while true; do
     echo -e '\n' "\e[1;33m $text4 \e[0m" '\n'
     read dir_name
     echo -e '\n' "\e[1;32m $text7 \e[0m" '\n'
-    find $mediapath -name "*.MTS" -o -name *".MP4" -print0 | xargs -0 -n 1 -I% rsync -a % transcoder@172.20.0.10:$end_dir$dir_name/ &
+    find $mediapath -name "*.MTS" -o -name *".MP4" -print0 | xargs -0 -I% rsync -a % transcoder@172.20.0.10:$end_dir$dir_name/ &
   fi
   sleep 5
   ps_status=`ps auxww | grep 'xargs'| grep -v grep | wc -l`
