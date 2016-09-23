@@ -1,6 +1,6 @@
 root = true
 
-[*]
+[*.sh]
 end_of_line = lf
 indent_style = space
 charset = utf-8
