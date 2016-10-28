@@ -33,7 +33,7 @@ while true; do
   fi
 
   if [ "$worklist" -gt "0" ]; then
-    echo -e '\n' "\e[0;32m Найденно \e[1;95m $worklist \e[0;32m $text3 \e[0m" '\n'
+    echo -e '\n' "\e[0;32m Найдено \e[1;95m $worklist \e[0;32m $text3 \e[0m" '\n'
     echo -e '\n' "\e[1;33m $text4 \e[0m" '\n'
     read dir_name
     echo -e '\n' "\e[1;32m $text7 \e[0m" '\n'
