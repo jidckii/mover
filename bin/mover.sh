@@ -42,7 +42,7 @@ while true; do
       zenity --error --title="Ошибка" --text="$err_enter"
       continue
     fi
-
+    dir_name=$(echo -n $dir_name | sed 's/ /_/g')
     echo -e '\n' "\e[1;32m $text7 \e[0m" '\n'
     # zenity --error --title="Инфо" --text="$text7"
 
