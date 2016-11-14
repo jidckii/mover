@@ -22,7 +22,7 @@ err_copy="Ошибка при копировании, повторить пои�
 to_copy(){
       find $mediapath -name "$1" -print0 | \
       xargs -0 -I% rsync -a % transcoder@172.20.0.10:$end_dir$dir_name/ | \
-      zenity --progress --pulsate --title="Копирование" --text="$wait_copy" \
+      zenity --progress --no-cancel --pulsate --title="Копирование" --text="$wait_copy" \
       --auto-close --auto-kill
 }
 
