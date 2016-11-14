@@ -10,7 +10,9 @@ mediapath=/media
 text1="Обнаружен USB носитель, с данными объемом "
 text2="USB носитель отсутствует"
 text3="видео файлов."
-text4="Введите ИМЯ для видео материала:"
+text4="Введите ИМЯ для видео материала в формате:  \n \
+(кто где когда сегодняшняя дата исх) \n \
+пример: представление главы ЖД района 1411 исх"
 text5="Отсутствует видео в формате .MP4 или .MTS , проверьте USB носитель на PC"
 text6="Копирование завершено, извлеките USB носитель !!!"
 wait_copy="Идет копирование, не извлекайте SD карту! ..."
@@ -51,6 +53,9 @@ while true; do
 
     if [ -z "$dir_name" ]; then
       zenity --error --title="Ошибка" --text="$err_enter"
+      if [[ "$?" -ne 0 ]]; then
+        exit 0
+      fi
       continue
     fi
   fi
@@ -60,10 +65,14 @@ while true; do
     # zenity --error --title="Инфо" --text="$text7"
 
     worklist=$(find $mediapath -name *.MTS -o -name *.MP4 | awk -F. '{print $NF}' | sed -n -e 1p)
+
     if [ "$worklist" = "MP4" ]; then
     to_copy "*.MP4"
       if [[ "$?" -ne 0 ]]; then
         zenity --error --title="Ошибка" --text="$err_copy"
+        if [[ "$?" -ne 0 ]]; then
+          exit 0
+        fi
         continue
       fi
     elif [ "$worklist" = "MTS" ]; then
@@ -71,6 +80,9 @@ while true; do
       # wait $pid
       if [[ "$?" -ne 0 ]]; then
         zenity --error --title="Ошибка" --text="$err_copy"
+        if [[ "$?" -ne 0 ]]; then
+          exit 0
+        fi
         continue
       fi
     fi
