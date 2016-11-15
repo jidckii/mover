@@ -55,9 +55,9 @@ zenity_info(){
   zenity --info --title="Внимание" --text="$*"
 }
 
-# zenity_sleep(){
-#   zenity --progress --pulsate --no-cancel --title="Поиск" --text="Вставьте SD карту!"
-# }
+zenity_sleep(){
+  zenity --progress --pulsate --no-cancel --title="Поиск" --text="Вставьте SD карту!" & SLEEP_PID=$!
+}
 
 
 sander(){
@@ -120,7 +120,7 @@ worker(){
   zenity_info $DIR_NAME $worklist "видео скопированно." $EXIT_MSG
 }
 
-zenity --progress --pulsate --no-cancel --title="Поиск" --text="Вставьте SD карту!" & SLEEP_PID=$!
+zenity_sleep
 
 while kill -0 $SLEEP_PID; do
   sleep 1
@@ -146,7 +146,7 @@ while kill -0 $SLEEP_PID; do
     usbsizeend=$(du -s $MEDIAPATH | awk '{print $1}')
     if [ "$usbsizeend" -ne "$usbsizenum" ];  then
       sander $DIR_NAME "скопированно"
-      zenity --progress --pulsate --no-cancel --title="Поиск" --text="Вставьте SD карту!" & SLEEP_PID=$!
+      zenity_sleep
       sleep 1
       break
     fi
