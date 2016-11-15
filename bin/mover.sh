@@ -32,7 +32,7 @@ ERR_MSG="Операция отменена, приостановленна ил�
 
 to_copy(){
       find $MEDIAPATH -name "$1" -print0 | \
-      xargs -0 -I% rsync -a % $SYNC_TARGET:$END_DIR$DIR_NAME/ |
+      xargs -0 -I% rsync -a % $SYNC_TARGET:$END_DIR$DIR_NAME/ | \
       zenity --progress --no-cancel --pulsate --title="Копирование" \
       --text="Копируется $DIR_NAME \n $WAIT_COPY" --auto-close --auto-kill
       if [[ "$?" -ne 0 ]]; then
