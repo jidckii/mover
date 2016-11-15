@@ -55,14 +55,19 @@ zenity_info(){
   zenity --info --title="Внимание" --text="$*"
 }
 
+zenity_sleep(){
+  zenity --progress --pulsate --no-cancel --title="Поиск" --text="Вставьте SD карту!"
+}
+
+
 sander(){
-   notify-send -i ~/Документы/mover/mover.jpg -t 50 "УВЕДОМЛЕНИЕ" "$*"
+   notify-send -i /opt/mover/mover.jpg -t 50 "УВЕДОМЛЕНИЕ" "$*"
 }
 
 # /opt/mover/mover.jpg
 
 worker(){
-  # sander $text1 $usbsizehum_num
+  kill -9 $SLEEP_PID
   worklist=$(find $MEDIAPATH -name *.MTS -o -name *.MP4 | wc -l)
 
   # Если файлов в формате по маске не обнаружено, начинаем цикл заново.
@@ -115,8 +120,8 @@ worker(){
   zenity_info $DIR_NAME $worklist "видео скопированно." $EXIT_MSG
 }
 
-
-while true; do
+zenity_sleep & SLEEP_PID=$!
+while kill -0 $SLEEP_PID; do
   sleep 1
   DATE=$(date +%Y-%m-%dT%T%Z)
   usbsizenum=$(du -s $MEDIAPATH | awk '{print $1}')
@@ -140,6 +145,7 @@ while true; do
     usbsizeend=$(du -s $MEDIAPATH | awk '{print $1}')
     if [ "$usbsizeend" -ne "$usbsizenum" ];  then
       sander $DIR_NAME "скопированно"
+      zenity_sleep & SLEEP_PID=$!
       break
     fi
     zenity_info $EXIT_MSG
