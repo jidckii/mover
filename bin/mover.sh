@@ -1,16 +1,15 @@
 #!/bin/bash
 
-set -x
+# set -x
 
-# LOG=/opt/mover/log/mover.log
 DATE_DAY=$(date +%Y-%m-%d)
 LOG=~/Документы/mover_$DATE_DAY.log
-END_DIR=/home/emedvedev/queue-video-tmp/
-SYNC_TARGET=${SYNC_TARGET:-"emedvedev@172.20.0.10"}
+# END_DIR=/home/emedvedev/queue-video-tmp/
+# SYNC_TARGET=${SYNC_TARGET:-"emedvedev@172.20.0.10"}
 
-# END_DIR=/home/transcoder/queue-video-tmp/
+END_DIR=/home/transcoder/queue-video-tmp/
 MEDIAPATH=/media
-# SYNC_TARGET=${SYNC_TARGET:-"transcoder@172.20.0.10"}
+SYNC_TARGET=${SYNC_TARGET:-"transcoder@172.20.0.10"}
 
 ENTER_WINDOW_STR1="видео обнаружено"
 ENTER_WINDOW_STR2="объемом"
