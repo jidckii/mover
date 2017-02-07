@@ -1,14 +1,16 @@
 #!/bin/bash
 
-# set -x
+set -x
 
-LOG=/opt/mover/log/mover.log
+# LOG=/opt/mover/log/mover.log
+DATE_DAY=$(date +%Y-%m-%d)
+LOG=~/Документы/mover_$DATE_DAY.log
+END_DIR=/home/emedvedev/queue-video-tmp/
+SYNC_TARGET=${SYNC_TARGET:-"emedvedev@172.20.0.10"}
 
-# LOG=~/Документы/mover/log/mover.log
-
-END_DIR=/home/transcoder/queue-video-tmp/
+# END_DIR=/home/transcoder/queue-video-tmp/
 MEDIAPATH=/media
-SYNC_TARGET=${SYNC_TARGET:-"transcoder@172.20.0.10"}
+# SYNC_TARGET=${SYNC_TARGET:-"transcoder@172.20.0.10"}
 
 ENTER_WINDOW_STR1="видео обнаружено"
 ENTER_WINDOW_STR2="объемом"
@@ -26,13 +28,13 @@ WAIT_COPY="Идет копирование, не извлекайте SD кар�
 ERR_ENTER="Вы не ввели имя, повторить поиск ?"
 ERR_COPY="Ошибка при копировании, повторить поиск ?"
 ERR_FIND="Отсутствует видео в формате .MP4 или .MTS , проверьте USB носитель на PC"
-ERR_MSG="Операция отменена, приостановленна или завершилась ошибкой. \
+ERR_MSG="Операция отменена, приостановлена или завершилась ошибкой. \
 Проверьте USB носитель на PC, если произошла ошибка! \
 Продолжить работу ?"
 
 to_copy(){
       find $MEDIAPATH -name "$1" -print0 | \
-      xargs -0 -I% rsync -a % $SYNC_TARGET:$END_DIR$DIR_NAME/ | \
+      xargs -0 -I% rsync -a % $SYNC_TARGET:$END_DIR$DIR_NAME.$END_FORMAT/ | \
       zenity --progress --no-cancel --pulsate --title="Копирование" \
       --text="Копируется $DIR_NAME \n $WAIT_COPY" --auto-close --auto-kill
       if [[ "$?" -ne 0 ]]; then
@@ -44,15 +46,22 @@ to_copy(){
 }
 
 log_info() {
-  echo -e "----> $*" >> $LOG 2>&1
+  echo -e "$DATE ----> $*" >> $LOG 2>&1
 }
 
 zenity_err(){
+  log_info "$*"
   zenity --error --title="Ошибка" --text="$*"
 }
 
 zenity_info(){
   zenity --info --title="Внимание" --text="$*"
+}
+
+zenity_selection_format(){
+  zenity --list --radiolist --title="Выбор конечного формата" \
+  --text="Выберите тип конечного формата который попадет DALET" \
+  --column="Отметка выбора" --column="Конечный формат" TRUE "SD_4:3" FALSE "FHD_16:9"
 }
 
 zenity_sleep(){
@@ -61,10 +70,8 @@ zenity_sleep(){
 
 
 sander(){
-   notify-send -i /opt/mover/mover.jpg -t 50 "УВЕДОМЛЕНИЕ" "$*"
+  notify-send -i /opt/mover/mover.jpg -t 50 "УВЕДОМЛЕНИЕ" "$*"
 }
-
-# /opt/mover/mover.jpg
 
 worker(){
   kill -15 $SLEEP_PID
@@ -77,11 +84,11 @@ worker(){
   fi
 
   if [ "$worklist" -gt "0" ]; then
-    # sander Найдено $worklist "видео файлов"
     DIR_NAME=$(zenity --entry --title="Ввод имени" --text="$worklist  $ENTER_WINDOW_STR1 $ENTER_WINDOW_STR2 \
     $usbsizehum_num \n $ENTER_WINDOW_STR3 \n $ENTER_WINDOW_STR4 \n $ENTER_WINDOW_STR5 \n $ENTER_WINDOW_STR6")
 
-    log_info $DATE $worklist $ENTER_WINDOW_STR1 $usbsizehum_num
+    END_FORMAT=$(zenity_selection_format)
+    log_info $worklist $ENTER_WINDOW_STR1 $usbsizehum_num
 
     if [ -z "$DIR_NAME" ]; then
       zenity_err $ERR_ENTER
@@ -91,26 +98,23 @@ worker(){
       continue
     fi
   fi
+
   DIR_NAME=$(echo -n $DIR_NAME | sed 's/ /_/g')
   sander "Введено имя:" $DIR_NAME
   log_info "Введено имя:"" $DIR_NAME"
-  # sander $WAIT_COPY
-  # zenity --error --title="Инфо" --text="$text7"
+  log_info $END_FORMAT
 
   FORMAT=$(find $MEDIAPATH -name *.MTS -o -name *.MP4 | awk -F. '{print $NF}' | sed -n -e 1p)
 
   if [ "$FORMAT" = "MP4" ]; then
     to_copy "*.MP4"
     if [[ "$?" -ne 0 ]]; then
-      # zenity --error --title="Ошибка" --text="$ERR_COPY"
       log_info $ERR_COPY
       return 1
     fi
   elif [ "$FORMAT" = "MTS" ]; then
     to_copy "*.MTS"
-    # wait $pid
     if [[ "$?" -ne 0 ]]; then
-      # zenity --error --title="Ошибка" --text="$ERR_COPY"
       log_info $ERR_COPY
       return 1
     fi
@@ -124,6 +128,7 @@ zenity_sleep
 
 while kill -0 $SLEEP_PID; do
   sleep 1
+  DATE_DAY=$(date +%Y-%m-%d)
   DATE=$(date +%Y-%m-%dT%T%Z)
   usbsizenum=$(du -s $MEDIAPATH | awk '{print $1}')
   usbsizehum_num=$(du -s -h $MEDIAPATH | awk '{print $1}')
