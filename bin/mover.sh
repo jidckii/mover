@@ -4,8 +4,8 @@
 
 DATE_DAY=$(date +%Y-%m-%d)
 LOG=~/Документы/mover_$DATE_DAY.log
-# END_DIR=/home/emedvedev/queue-video-tmp/
-# SYNC_TARGET=${SYNC_TARGET:-"emedvedev@172.20.0.10"}
+# END_DIR=/home/emedvedev/queue-video-tmp/  # dev path
+# SYNC_TARGET=${SYNC_TARGET:-"emedvedev@172.20.0.10"}   # dev path
 
 END_DIR=/home/transcoder/queue-video-tmp/
 MEDIAPATH=/media
@@ -86,7 +86,7 @@ worker(){
     DIR_NAME=$(zenity --entry --title="Ввод имени" --text="$worklist  $ENTER_WINDOW_STR1 $ENTER_WINDOW_STR2 \
     $usbsizehum_num \n $ENTER_WINDOW_STR3 \n $ENTER_WINDOW_STR4 \n $ENTER_WINDOW_STR5 \n $ENTER_WINDOW_STR6")
 
-    END_FORMAT=$(zenity_selection_format)
+    END_FORMAT=$(zenity_selection_format | awk -F_ '{print $1}')
     log_info $worklist $ENTER_WINDOW_STR1 $usbsizehum_num
 
     if [ -z "$DIR_NAME" ]; then
