@@ -60,7 +60,7 @@ zenity_info(){
 zenity_selection_format(){
   zenity --list --radiolist --title="Выбор конечного формата" \
   --text="Выберите тип конечного формата который попадет DALET" \
-  --column="Отметка выбора" --column="Конечный формат" TRUE "SD_4:3" FALSE "FHD_16:9"
+  --column="Отметка выбора" --column="Конечный формат" FALSE "SD_4:3" TRUE "FHD_16:9"
 }
 
 zenity_sleep(){
